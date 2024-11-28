@@ -1,43 +1,19 @@
 import { userDataURL } from '../constant';
-import React, { useEffect, useState } from 'react';
+import useFetchDataURL  from './UseFetchDataURL';
+import React, { useEffect,useState } from 'react';
 
 const NewsFeed = () => {
   const [user, setUsers] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+ 
+  const { data, loading } = useFetchDataURL('https://jsonplaceholder.typicode.com/users');
+  // Use useEffect to avoid infinite loop
   useEffect(() => {
-    setTimeout(() => {
-        fetchData();
-    }, 2000);
-   
-  }, []);
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const resp = await fetch(userDataURL);
-      if (!resp.ok) {
-        console.log('respone is not okay');
-        throw new Error('Failed to fetch news');
-      }
-
-      const data = await resp.json();
-      setUsers(data);
-    } catch (err) {
-      setError(err.message);
-      console.log(err);
-      setLoading(false);
-    } finally {
-      setLoading(false); // Set loading to false after the request finishes
+    if (data.length > 0) {
+      setUsers(data[0]); // Set only the first user or update logic as needed
     }
-  };
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  }, [data]);
+  console.log('data',user);
+  if (loading) return <p>Loading...</p>;
   return (
     <div>
       <h2>User Details</h2>
@@ -70,26 +46,8 @@ const NewsFeed = () => {
               <td><strong>Website</strong></td>
               <td>{user.website}</td>
             </tr>
-            <tr>
-              <td><strong>Address</strong></td>
-              
-            </tr>
-            <tr>
-              <td><strong>Geo Location</strong></td>
-              
-            </tr>
-            <tr>
-              <td><strong>Company</strong></td>
-             
-            </tr>
-            <tr>
-              <td><strong>CatchPhrase</strong></td>
             
-            </tr>
-            <tr>
-              <td><strong>Business</strong></td>
             
-            </tr>
           </tbody>
           </table>
       )}
